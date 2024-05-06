@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crud/services/firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,88 +11,99 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // Firestore
   final FirestoreService firestoreService = FirestoreService();
+  final DateFormat dateFormat = DateFormat('dd-MM-yyyy HH:mm');
 
-  // Text Controller
-  final TextEditingController textController = TextEditingController();
+  Widget buildRecentNotes() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: firestoreService.getNotes().take(3),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
 
-  // Open a dialog to create/update a note
-  void openNoteBox({String? id, String? initialText}) {
-    textController.text = initialText ?? '';
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        content: TextField(
-          controller: textController,
-          decoration: const InputDecoration(hintText: "Enter note"),
-        ),
-        actions: [
-          // Button to Save
-          ElevatedButton(
-            onPressed: () {
-              // Add or update the note
-              if (id == null) {
-                firestoreService.addNote(textController.text);
-              } else {
-                firestoreService.updateNote(id, textController.text);
-              }
+        return Column(
+          children: snapshot.data!.docs.map((doc) {
+            var title = doc['title'];
+            var description = doc['description'];
+            var timestamp = (doc['timestamp'] as Timestamp).toDate();
 
-              // Clear the text field
-              textController.clear();
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              elevation: 3,
+              child: ListTile(
+                title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(description),
+                    Text(dateFormat.format(timestamp), style: const TextStyle(color: Colors.grey)),
+                  ],
+                ),
+                leading: const Icon(Icons.note, color: Colors.brown),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
 
-              // Close the dialog
-              Navigator.pop(context);
-            },
-            child: Text(id == null ? "Add" : "Update"),
-          )
-        ],
-      ),
+  Widget buildRecentTasks() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: firestoreService.getTasks().take(3),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return Column(
+          children: snapshot.data!.docs.map((doc) {
+            var name = doc['name'];
+            var isCompleted = doc['isCompleted'] as bool;
+            var timestamp = (doc['timestamp'] as Timestamp).toDate();
+
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              elevation: 3,
+              child: ListTile(
+                title: Text(
+                  name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                  ),
+                ),
+                subtitle: Text(dateFormat.format(timestamp), style: const TextStyle(color: Colors.grey)),
+                leading: const Icon(Icons.check, color: Colors.brown),
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Notes")),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => openNoteBox(),
-        child: const Icon(Icons.add),
-      ),
-      body: StreamBuilder<QuerySnapshot>(
-        stream: firestoreService.getNotes(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          return ListView.builder(
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              var doc = snapshot.data!.docs[index];
-              var note = doc['note'];
-              var timestamp = (doc['timestamp'] as Timestamp).toDate();
-
-              return ListTile(
-                title: Text(note),
-                subtitle: Text(timestamp.toString()),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => openNoteBox(id: doc.id, initialText: note),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => firestoreService.deleteNote(doc.id),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        },
+      appBar: AppBar(title: const Text("Dashboard")),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Recent Notes', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            buildRecentNotes(),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text('Recent Tasks', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            ),
+            buildRecentTasks(),
+          ],
+        ),
       ),
     );
   }
