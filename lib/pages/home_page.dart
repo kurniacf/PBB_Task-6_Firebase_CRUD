@@ -20,19 +20,24 @@ class _HomePageState extends State<HomePage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            var doc = snapshot.data!.docs[index];
+        return Column(
+          children: snapshot.data!.docs.map((doc) {
             var title = doc['title'];
             var description = doc['description'];
 
-            return ListTile(
-              title: Text(title),
-              subtitle: Text(description),
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              elevation: 3,
+              child: ListTile(
+                title: Text(
+                  title,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text(description),
+                leading: const Icon(Icons.note, color: Colors.brown),
+              ),
             );
-          },
+          }).toList(),
         );
       },
     );
@@ -46,19 +51,24 @@ class _HomePageState extends State<HomePage> {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return ListView.builder(
-          shrinkWrap: true,
-          itemCount: snapshot.data!.docs.length,
-          itemBuilder: (context, index) {
-            var doc = snapshot.data!.docs[index];
+        return Column(
+          children: snapshot.data!.docs.map((doc) {
             var name = doc['name'];
             var isCompleted = doc['isCompleted'] as bool;
 
-            return ListTile(
-              title: Text(name),
-              subtitle: Text("Completed: $isCompleted"),
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+              elevation: 3,
+              child: ListTile(
+                title: Text(
+                  name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Text("Completed: $isCompleted"),
+                leading: const Icon(Icons.check, color: Colors.brown),
+              ),
             );
-          },
+          }).toList(),
         );
       },
     );
@@ -76,7 +86,7 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.all(16),
               child: Text(
                 'Recent Notes',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
             buildRecentNotes(),
@@ -84,7 +94,7 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.all(16),
               child: Text(
                 'Recent Tasks',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
             buildRecentTasks(),

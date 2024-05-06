@@ -1,9 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crud/firebase_options.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_crud/pages/home_page.dart';
 import 'package:firebase_crud/pages/notes_page.dart';
 import 'package:firebase_crud/pages/tasks_page.dart';
-import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,9 +17,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainPage(),
+      theme: ThemeData(
+        primarySwatch: Colors.brown,
+        textTheme: GoogleFonts.nunitoTextTheme(Theme.of(context).textTheme),
+        scaffoldBackgroundColor: const Color(0xFFF5F5DC), 
+        appBarTheme: AppBarTheme(
+          backgroundColor: const Color(0xFFEFE6CC), 
+          titleTextStyle: GoogleFonts.nunito(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.brown),
+          elevation: 0,
+        ),
+      ),
+      home: const MainPage(),
     );
   }
 }
