@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "347366385644",
+    "project_id": "crud-firebase-bbafa",
+    "storage_bucket": "crud-firebase-bbafa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:347366385644:android:87ce1fe782affa8f4b42c9",
+        "android_client_info": {
+          "package_name": "com.example.firebase_crud"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAmkWVPfEIBYblCU0ARbQOjEkT_10zK-sc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
