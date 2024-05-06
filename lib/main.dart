@@ -1,14 +1,25 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crud/firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_crud/pages/home_page.dart';
 import 'package:firebase_crud/pages/notes_page.dart';
 import 'package:firebase_crud/pages/tasks_page.dart';
+import 'package:firebase_crud/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Load .env file
+  await dotenv.load(fileName: "lib/.env");
+
+  // Check if Firebase is already initialized
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
+
   runApp(const MyApp());
 }
 
