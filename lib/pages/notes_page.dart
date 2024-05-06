@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crud/services/firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({super.key});
@@ -13,6 +14,7 @@ class _NotesPageState extends State<NotesPage> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+  final DateFormat dateFormat = DateFormat('dd-MM-yyyy HH:mm');
 
   void openNoteBox({String? id, String? initialTitle, String? initialDescription}) {
     titleController.text = initialTitle ?? '';
@@ -60,6 +62,7 @@ class _NotesPageState extends State<NotesPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => openNoteBox(),
         child: const Icon(Icons.add),
+        shape: const CircleBorder(),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: firestoreService.getNotes(),
@@ -78,7 +81,13 @@ class _NotesPageState extends State<NotesPage> {
 
               return ListTile(
                 title: Text(title),
-                subtitle: Text(description),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(description),
+                    Text(dateFormat.format(timestamp), style: const TextStyle(color: Colors.grey)),
+                  ],
+                ),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

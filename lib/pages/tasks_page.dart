@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crud/services/firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class TasksPage extends StatefulWidget {
   const TasksPage({super.key});
@@ -12,6 +13,7 @@ class TasksPage extends StatefulWidget {
 class _TasksPageState extends State<TasksPage> {
   final FirestoreService firestoreService = FirestoreService();
   final TextEditingController taskNameController = TextEditingController();
+  final DateFormat dateFormat = DateFormat('dd-MM-yyyy HH:mm');
 
   void openTaskBox({String? id, String? initialName, bool? initialIsCompleted}) {
     taskNameController.text = initialName ?? '';
@@ -64,6 +66,7 @@ class _TasksPageState extends State<TasksPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () => openTaskBox(),
         child: const Icon(Icons.add),
+        shape: const CircleBorder(),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: firestoreService.getTasks(),
@@ -81,8 +84,14 @@ class _TasksPageState extends State<TasksPage> {
               var timestamp = (doc['timestamp'] as Timestamp).toDate();
 
               return ListTile(
-                title: Text(name),
-                subtitle: Text("Completed: $isCompleted"),
+                title: Text(
+                  name,
+                  style: TextStyle(
+                    decoration: isCompleted ? TextDecoration.lineThrough : null,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                subtitle: Text(dateFormat.format(timestamp), style: const TextStyle(color: Colors.grey)),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
